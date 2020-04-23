@@ -131,7 +131,7 @@ class Test extends AnyFunSuite with BeforeAndAfterAll {
       val rs = stm.executeQuery("""select count(*) as count_of_table from information_schema.tables where table_name = 'TEST3'""")
       try {
         if (rs.next) {
-          isTableCreated = (1 == rs.getInt("count_of_table"))
+          isTableCreated = 1 == rs.getInt("count_of_table")
         }
       }
       catch {
@@ -179,5 +179,4 @@ class Test extends AnyFunSuite with BeforeAndAfterAll {
     databaseInstance.setDeleteFilesOnDisconnect(true)
     databaseInstance
   }
-
 }
