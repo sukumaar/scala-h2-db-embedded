@@ -3,21 +3,19 @@ package sukumaar
 import java.io.File
 import java.sql.{Connection, DriverManager, Statement}
 
-import org.h2.engine.{ConnectionInfo, Database => H2Database}
+import org.h2.engine.{ConnectionInfo, Database}
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.funsuite.AnyFunSuite
 
 import scala.reflect.io.Directory
 
 /**
- * Note: Database class from org.h2.engine has been aliased to H2Database
- * while importing to make it more readable
+ * Testing Embedded H2 DB with Scalatest in Scala
  *
- * some info: https://medium.com/@harittweets/how-to-connect-to-h2-database-during-development-testing-using-spring-boot-44bbb287570
  */
 class Test extends AnyFunSuite with BeforeAndAfterAll {
 
-  val databaseInstance: H2Database = createDatabaseInstance()
+  val databaseInstance: Database = createDatabaseInstance()
   val con: Connection = DriverManager.getConnection(DATABASE_URL)
   val stm: Statement = con.createStatement
 
@@ -49,8 +47,6 @@ class Test extends AnyFunSuite with BeforeAndAfterAll {
     /**
      * By default table & column names will get capitalized in H2 DB if no quotes are provided,
      * Relevant setting is DATABASE_TO_UPPER inside [[org.h2.engine.DbSettings]] databaseToUpper()
-     * https://github.com/h2database/h2database/issues/1739
-     * https://github.com/h2database/h2database/blob/6b033540387fad0bb8fe9de428eb8d1c72b2c09e/h2/src/main/org/h2/engine/DbSettings.java#L58-L66
      **/
     var isTableCreated = false
     val sql: String =
@@ -172,10 +168,10 @@ class Test extends AnyFunSuite with BeforeAndAfterAll {
     if (stm != null) stm.close()
   }
 
-  private def createDatabaseInstance(): H2Database = {
+  private def createDatabaseInstance(): Database = {
     val connectionInfo = new ConnectionInfo(DATABASE_NAME)
     connectionInfo.setBaseDir(DATABASE_DIR)
-    val databaseInstance = new H2Database(connectionInfo, "")
+    val databaseInstance = new Database(connectionInfo, "")
     databaseInstance.setDeleteFilesOnDisconnect(true)
     databaseInstance
   }
