@@ -1,4 +1,4 @@
-name := "scala-sql"
+name := "scala-h2-db-embedded"
 
 version := "0.1"
 

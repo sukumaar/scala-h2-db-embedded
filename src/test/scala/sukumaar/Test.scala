@@ -3,7 +3,6 @@ package sukumaar
 import java.io.File
 import java.sql.{Connection, DriverManager, Statement}
 
-import org.h2.engine.{ConnectionInfo, Database}
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.funsuite.AnyFunSuite
 
@@ -15,13 +14,11 @@ import scala.reflect.io.Directory
  */
 class Test extends AnyFunSuite with BeforeAndAfterAll {
 
-  val databaseInstance: Database = createDatabaseInstance()
   val con: Connection = DriverManager.getConnection(DATABASE_URL)
   val stm: Statement = con.createStatement
 
   override def afterAll() {
     jdbcDisconnect()
-    databaseInstance.shutdownImmediately()
     clearDatabaseDataDir()
   }
 
@@ -158,9 +155,7 @@ class Test extends AnyFunSuite with BeforeAndAfterAll {
   }
 
   private def clearDatabaseDataDir(): Unit = {
-    //DeleteDbFiles.execute(DATABASE_DIR, DATABASE_NAME, false) // I don't know  why but this is not working as expected
-    val parentDirectory = new File(PARENT_DIR)
-    assert(new Directory(parentDirectory).deleteRecursively())
+    new Directory(new File(PARENT_DIR)).deleteRecursively()
   }
 
   private def jdbcDisconnect(): Unit = {
@@ -168,11 +163,4 @@ class Test extends AnyFunSuite with BeforeAndAfterAll {
     if (stm != null) stm.close()
   }
 
-  private def createDatabaseInstance(): Database = {
-    val connectionInfo = new ConnectionInfo(DATABASE_NAME)
-    connectionInfo.setBaseDir(DATABASE_DIR)
-    val databaseInstance = new Database(connectionInfo, "")
-    databaseInstance.setDeleteFilesOnDisconnect(true)
-    databaseInstance
-  }
 }
